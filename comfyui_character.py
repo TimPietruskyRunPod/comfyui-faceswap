@@ -445,7 +445,15 @@ class ComfyUICharacter:
         for model_dir in model_dirs:
             volume_model_path = os.path.join(models_path, "models", model_dir)
             comfyui_model_path = os.path.join(comfyui_models_dir, model_dir)
-            if os.path.exists(volume_model_path) and not os.path.exists(comfyui_model_path):
+            if not os.path.exists(volume_model_path):
+                continue
+            if os.path.islink(comfyui_model_path):
+                continue  # Already a symlink
+            if os.path.isdir(comfyui_model_path) and not os.listdir(comfyui_model_path):
+                # Empty dir from base image — remove it so we can symlink
+                os.rmdir(comfyui_model_path)
+            if not os.path.exists(comfyui_model_path):
+                self.logger.info(f"Symlinking {comfyui_model_path} -> {volume_model_path}")
                 os.symlink(volume_model_path, comfyui_model_path)
 
         folder_paths.set_output_directory(os.path.join(comfyui_path, "output"))
