@@ -438,6 +438,16 @@ class ComfyUICharacter:
             if os.path.exists(volume_model_path):
                 folder_paths.add_model_folder_path(model_dir, volume_model_path)
 
+        # Symlink volume model dirs into ComfyUI's models_dir so plugins
+        # that construct paths directly from folder_paths.models_dir can
+        # find them (e.g. ComfyUI_IPAdapter_plus for insightface/ultralytics).
+        comfyui_models_dir = os.path.join(comfyui_path, "models")
+        for model_dir in model_dirs:
+            volume_model_path = os.path.join(models_path, "models", model_dir)
+            comfyui_model_path = os.path.join(comfyui_models_dir, model_dir)
+            if os.path.exists(volume_model_path) and not os.path.exists(comfyui_model_path):
+                os.symlink(volume_model_path, comfyui_model_path)
+
         folder_paths.set_output_directory(os.path.join(comfyui_path, "output"))
 
         # Create a minimal PromptServer (required for some custom nodes)
