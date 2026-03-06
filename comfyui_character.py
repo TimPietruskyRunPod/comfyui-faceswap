@@ -593,6 +593,26 @@ class ComfyUICharacter:
 
         # Load InsightFace for IPAdapter
         self.logger.info("Loading InsightFace...")
+        # Debug: check insightface path resolution
+        import folder_paths as _fp
+        _insightface_symlink = os.path.join(_fp.models_dir, "insightface")
+        _insightface_models = os.path.join(_insightface_symlink, "models", "buffalo_l")
+        self.logger.info(f"folder_paths.models_dir = {_fp.models_dir}")
+        self.logger.info(f"insightface symlink exists: {os.path.exists(_insightface_symlink)}, is_link: {os.path.islink(_insightface_symlink)}")
+        self.logger.info(f"buffalo_l dir exists: {os.path.exists(_insightface_models)}")
+        if os.path.exists(_insightface_models):
+            self.logger.info(f"buffalo_l contents: {os.listdir(_insightface_models)}")
+        else:
+            # List what's actually in the insightface dir
+            if os.path.exists(_insightface_symlink):
+                self.logger.info(f"insightface contents: {os.listdir(_insightface_symlink)}")
+            # Also check volume path directly
+            vol_path = os.path.join(self.MODELS_PATH, "models", "insightface")
+            self.logger.info(f"volume insightface path exists: {os.path.exists(vol_path)}")
+            if os.path.exists(vol_path):
+                for root, dirs, files in os.walk(vol_path):
+                    for f in files:
+                        self.logger.info(f"  volume: {os.path.join(root, f)}")
         IPAdapterInsightFaceLoader = NODE_CLASS_MAPPINGS["IPAdapterInsightFaceLoader"]
         self.insightface = IPAdapterInsightFaceLoader().load_insightface(
             provider="CUDA", model_name="buffalo_l"
