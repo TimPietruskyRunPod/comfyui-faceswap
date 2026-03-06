@@ -172,7 +172,7 @@ class ComfyUICharacter:
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        comfyui_path = os.environ.get("COMFYUI_PATH", self.COMFYUI_PATH)
+        comfyui_path = self.COMFYUI_PATH
         models_path = self.MODELS_PATH
 
         # Phase 1: Download models to network volume (cached, skip if sentinel)
